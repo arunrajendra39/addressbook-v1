@@ -9,31 +9,31 @@ pipeline {
         stage('Compile') {
             steps {
                 echo 'Compile the code'
-                sh 'mvn compile'
+                bat 'mvn compile'
             }
         }
         stage('CodeReview') {
             steps {
                 echo 'Review the code'
-                sh 'mvn pmd:pmd'
+                bat 'mvn pmd:pmd'
             }
         }
         stage('UnitTest') {
             steps {
                 echo 'Test the code'
-                sh 'mvn test'
+                bat 'mvn test'
             }
         }
         stage('CoverageAnalysis') {
             steps {
                 echo 'Coverage the code'
-                sh 'mvn verify'
+                bat 'mvn verify'
             }
         }
         stage('Package') {
             steps {
                 echo 'Package the code'
-                sh 'mvn package'
+                bat 'mvn package'
             }
         }
     }
