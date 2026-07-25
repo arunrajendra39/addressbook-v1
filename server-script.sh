@@ -1,8 +1,8 @@
-# sudo yum install java -y
+sudo yum install java -y
 sudo yum install git -y
-# sudo yum install maven -y
-sudo yum install docker -y
-sudo service docker start
+sudo yum install maven -y
+# sudo yum install docker -y
+# sudo service docker start
 
 
 if [ -d "addressbook-v1" ]
@@ -11,10 +11,10 @@ then
   cd /home/ec2-user/addressbook-v1
   git pull origin master
 else
-  git clone https://github.com/preethid/addressbook-v1.git
+  git clone https://github.com/arunrajendra39/addressbook-v1.git
 fi
 
 cd /home/ec2-user/addressbook-v1
 # mvn compile
 
-sudo docker build -t $1 .
+#sudo docker build -t $1 .
