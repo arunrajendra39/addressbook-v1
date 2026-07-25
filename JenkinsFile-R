@@ -4,36 +4,60 @@ pipeline {
         jdk 'myjava'
         maven 'mymaven'
     }
+    parameters {
+        string(name: 'Env', defaultValue: 'Test', description: 'Version to deploy')
+        booleanParam(name: 'executeTests', defaultValue: true, description: 'Decide to run test cases')
+        choice(name: 'APPVERSION', choices: ['1.1', '1.2', '1.3'], description: 'Select application version')
+     }
+     
+     environment {
+        BUILD_SERVER='ec2-user@43.204.114.15'
+        //IMAGE_NAME='devopstrainer/java-mvn-privaterepos:$BUILD_NUMBER'
+     }
 
     stages {
         stage('Compile') {
             steps {
-                echo 'Compile the code'
+                echo "Compiling the code in ${params.Env} Environment"
                 sh 'mvn compile'
             }
         }
         stage('CodeReview') {
             steps {
-                echo 'Review the code'
+                echo "Review the code in ${params.Env} Environment"
                 sh 'mvn pmd:pmd'
             }
         }
         stage('UnitTest') {
+            when {
+                expression { return params.executeTests == true}
+            }
             steps {
                 echo 'Test the code'
                 sh 'mvn test'
             }
+            post{
+                always{
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
         }
         stage('CoverageAnalysis') {
             steps {
-                echo 'Coverage the code'
+                echo "Coverage the code ${params.APPVERSION}"
                 sh 'mvn verify'
             }
         }
         stage('Package') {
+            input{
+                message "Do you want tp package the code?"
+                ok "Yes, I want the package"
+            }
             steps {
-                echo 'Package the code'
-                sh 'mvn package'
+                sshagent (['slavenode'])
+                echo "Package the code in ${params.Env} Environment"
+                sh "scp -o StrictHostKeyChecking=no server-script.sh ${BUILD_SERVER}:/home/ec2-user"
+                sh "ssh -o StrictHostKeyChecking=no ${BUILD_SERVER} 'bash ~/server-script.sh'"
             }
         }
     }
