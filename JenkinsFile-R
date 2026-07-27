@@ -54,10 +54,11 @@ pipeline {
                 ok "Yes, I want the package"
             }
             steps {
-                sshagent (['slavenode'])
+                sshagent (['slavenode']){
                 echo "Package the code in ${params.Env} Environment"
                 sh "scp -o StrictHostKeyChecking=no server-script.sh ${BUILD_SERVER}:/home/ec2-user"
                 sh "ssh -o StrictHostKeyChecking=no ${BUILD_SERVER} 'bash ~/server-script.sh'"
+              }
             }
         }
     }
